@@ -3,6 +3,7 @@ package com.crud.challenge.services;
 import com.crud.challenge.dto.ClientDTO;
 import com.crud.challenge.entities.Client;
 import com.crud.challenge.repositories.ClientRepository;
+import com.crud.challenge.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +27,7 @@ public class ClientService {
     @Transactional(readOnly = true)
     public ClientDTO findById(Long id){
        Optional<Client> client = repository.findById(id);
-       Client entity = client.get();
+       Client entity = client.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
        return new ClientDTO(entity);
     }
 
