@@ -1,16 +1,11 @@
-package com.crud.challenge.entities;
+package com.crud.challenge.dto;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import com.crud.challenge.entities.Client;
+
 import java.time.Instant;
 
-@Entity
-@Table(name = "tb_client")
-public class Client implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class ClientDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String cpf;
@@ -18,7 +13,25 @@ public class Client implements Serializable {
     private Instant birthDate;
     private Integer children;
 
-    public Client(){
+    public ClientDTO(){
+    }
+
+    public ClientDTO(Client entity){
+        id = entity.getId();
+        name = entity.getName();
+        cpf = entity.getCpf();
+        income = entity.getIncome();
+        birthDate = entity.getBirthDate();
+        children = entity.getChildren();
+    }
+
+    public ClientDTO(Long id, String name, String cpf, Double income, Instant birthDate, Integer children) {
+        this.id = id;
+        this.name = name;
+        this.cpf = cpf;
+        this.income = income;
+        this.birthDate = birthDate;
+        this.children = children;
     }
 
     public Long getId() {

@@ -1,39 +1,55 @@
 package com.crud.challenge.controllers;
 
-import com.crud.challenge.entities.Client;
-import com.crud.challenge.repositories.ClientRepository;
+import com.crud.challenge.dto.ClientDTO;
+import com.crud.challenge.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/clients")
 public class ClientController {
 
     @Autowired
-    private ClientRepository repository;
+    private ClientService service;
 
     @GetMapping
-    public List<Client> findAll(){
-       List<Client> listClient = repository.findAll();
-       return listClient;
+    public ResponseEntity<Page<ClientDTO>> findAll(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
+            @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+            @RequestParam(value = "orderBy", defaultValue = "name") String orderBy
+    ){
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+       Page<ClientDTO> list = service.findAllPaged(pageRequest);
+       return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/{id}")
-    public Client findById(@PathVariable Long id){
-        Client client = repository.findById(id).get();
-        return client;
+    public ResponseEntity<ClientDTO> findById(@PathVariable Long id){
+        ClientDTO dto = service.findById(id);
+        return ResponseEntity.ok().body(dto);
     }
 
     @PostMapping
-    public Client insert(@RequestBody Client client){
-        Client clientSave = repository.save(client);
-        return clientSave;
+    public ResponseEntity<ClientDTO> insert(@RequestBody ClientDTO client){
+        ClientDTO dto = service.insert(client);
+        return ResponseEntity.ok().body(dto);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ClientDTO> update(@PathVariable Long id, @RequestBody ClientDTO client){
+        client = service.update(id, client);
+        return ResponseEntity.ok().body(client);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable Long id){
-        repository.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
+
 }
